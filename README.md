@@ -14,7 +14,7 @@ newtype Pointed a = Pointed
   }
 ```
 
-It allows quickly move focus and update or replace value at the current position.
+It allows to quickly move focus and update or replace value at the current position.
 
 ## Operations
 
