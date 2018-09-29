@@ -1,5 +1,10 @@
 {
   "name": "purescript-pointed-list",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paluh/purescript-pointed-list.git"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
