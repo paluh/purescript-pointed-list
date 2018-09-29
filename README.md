@@ -4,7 +4,7 @@ Port of Haskell pointedlist library.
 
 ## Type
 
-This library provides this type:
+Single type provided by this library is `Data.List.Pointed`:
 
 ```purescript
 newtype Pointed a = Pointed
