@@ -6,10 +6,11 @@ import Control.Comonad (extend, extract)
 import Data.Array (fromFoldable, singleton, snoc) as Array
 import Data.Foldable (fold, foldMap, sum)
 import Data.List (length) as List
-import Data.List.Pointed (Pointed(..), insertLeft, insertRight, prev)
+import Data.List.Pointed (Pointed(..), fromFoldable, insertLeft, insertRight, prev)
 import Data.List.Pointed (fromFoldable) as Pointed
 import Data.Maybe (Maybe(..))
 import Data.Monoid.Additive (Additive(..))
+import Data.Semigroup.Foldable (fold1)
 import Effect (Effect)
 import Test.Unit (suite, test)
 import Test.Unit.Assert (equal)
@@ -85,3 +86,13 @@ main = runTest $ do
         p' =  extend (sum' <<< extend sum') <$> initial
       equal (Array.fromFoldable <$> p') (Array.fromFoldable <$> p)
       equal (extract <$> p') (extract <$> p)
+    test "fold1 from end" do
+      let r = map fold1 (fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+    test "fold1" do
+      let r = map fold1 (prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+    test "fold1 from start" do
+      let r = map fold1 (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+
