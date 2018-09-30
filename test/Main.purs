@@ -3,7 +3,8 @@ module Test.Main where
 import Prelude
 
 import Control.Comonad (extend, extract)
-import Data.Array (fromFoldable, singleton, snoc) as Array
+import Data.Array (fromFoldable, snoc) as Array
+import Data.Array (foldl, foldr)
 import Data.Foldable (fold, foldMap, sum)
 import Data.List (length) as List
 import Data.List.Pointed (Pointed(..), fromFoldable, insertLeft, insertRight, prev)
@@ -20,11 +21,8 @@ main :: Effect Unit
 main = runTest $ do
   suite "Data.List.Pointed" $ do
     test "fromFoldable" do
-      let arr = [1,2,3]
-      equal (Array.fromFoldable <$> Pointed.fromFoldable arr) (Just arr)
-    test "foldMap" do
       let arr = [1, 2, 3]
-      equal (foldMap Array.singleton <$> Pointed.fromFoldable arr) (Just arr)
+      equal (Array.fromFoldable <$> Pointed.fromFoldable arr) (Just arr)
     test "fold" do
       let arr = [Additive 1, Additive 2, Additive 3]
       equal (fold <$> Pointed.fromFoldable arr) (Just (Additive 6))
@@ -96,3 +94,34 @@ main = runTest $ do
       let r = map fold1 (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
 
+
+    test "foldr from the beginning" do
+      let r = map (foldr (<>) "") (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+    test "foldr" do
+      let r = map (foldr (<>) "") (prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+    test "foldr from the end" do
+      let r = map (foldr (<>) "") (fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+
+    test "foldl from the beginning" do
+      let r = map (foldl (<>) "") (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+    test "foldl" do
+      let r = map (foldl (<>) "") (prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+    test "foldl from the end" do
+      let r = map (foldl (<>) "") (fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+
+
+    test "foldMap from the beginning" do
+      let r = map (foldMap identity) (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+    test "foldMap" do
+      let r = map (foldMap identity) (prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r
+    test "foldMap from the end" do
+      let r = map (foldMap identity) (fromFoldable ["1", "2", "3", "4", "5"])
+      equal (Just "12345") r

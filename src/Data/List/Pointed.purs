@@ -30,7 +30,7 @@ instance extendPointed ∷ Extend Pointed where
     suffix' =
       (_.accum <<< foldl (step next) { prevPointed: initial, accum: identity } $ suffix) $ Nil
     reversedPrefix' =
-      ((_.accum <<< foldl (step prev) { prevPointed: initial, accum: identity }) $ reversedPrefix) $ Nil
+      (_.accum <<< foldl (step prev) { prevPointed: initial, accum: identity } $ reversedPrefix) $ Nil
 
 instance extractPointed ∷ Comonad Pointed where
   extract (Pointed { focus }) = focus
@@ -40,7 +40,7 @@ instance foldablePointed ∷ Foldable Pointed where
     foldr f (f focus (foldr f z suffix)) (reverse reversedPrefix)
 
   foldl f z (Pointed { focus, reversedPrefix, suffix }) =
-    foldl f (f (foldl f z (reverse reversedPrefix)) focus) suffix
+    foldl f (f (foldr (flip f) z (reversedPrefix)) focus) suffix
 
   foldMap f (Pointed { focus, reversedPrefix, suffix }) =
     foldMap f (reverse reversedPrefix) <> f focus <> foldMap f suffix
