@@ -52,10 +52,10 @@ instance traversablePointed ∷ Traversable Pointed where
 
 instance foldable1Pointed ∷ Foldable1 Pointed where
   fold1 (Pointed { suffix, reversedPrefix, focus }) =
-    foldr (<>) (foldl (<>) focus reversedPrefix) suffix
+    foldl (<>) (foldl (flip (<>)) focus reversedPrefix) suffix
 
   foldMap1 f (Pointed { suffix, reversedPrefix, focus }) =
-    foldr (\e r → f e <> r) (foldl (\r e → r <> f e) (f focus) reversedPrefix) suffix
+    foldl (\r e → r <> f e) (foldl (\r e → f e <> r) (f focus) reversedPrefix) suffix
 
 instance eqPointed ∷ Eq a ⇒ Eq (Pointed a) where
   eq
