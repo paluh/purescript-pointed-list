@@ -66,7 +66,7 @@ instance eqPointed ∷ Eq a ⇒ Eq (Pointed a) where
 -- | Build and set focus at the end.
 fromFoldable ∷ ∀ a f. Foldable f ⇒ f a → Maybe (Pointed a)
 fromFoldable f = do
-  let revAll = (reverse $ List.fromFoldable f)
+  let revAll = foldl (flip Cons) Nil f
   { head, tail } ← uncons revAll
   pure $ Pointed { focus: head, reversedPrefix: tail, suffix: Nil }
 
