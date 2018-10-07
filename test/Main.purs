@@ -3,11 +3,11 @@ module Test.Main where
 import Prelude
 
 import Control.Comonad (extend, extract)
-import Data.Array (fromFoldable, snoc) as Array
 import Data.Array (foldl, foldr)
+import Data.Array (fromFoldable, snoc) as Array
 import Data.Foldable (fold, foldMap, sum)
 import Data.List (length) as List
-import Data.List.Pointed (Pointed(..), fromFoldable, insertLeft, insertRight, prev)
+import Data.List.Pointed (Pointed(..), atEnd, atStart, fromFoldable, insertLeft, insertRight, moveEnd, moveStart, prev)
 import Data.List.Pointed (fromFoldable) as Pointed
 import Data.Maybe (Maybe(..))
 import Data.Monoid.Additive (Additive(..))
@@ -16,6 +16,7 @@ import Effect (Effect)
 import Test.Unit (suite, test)
 import Test.Unit.Assert (equal)
 import Test.Unit.Main (runTest)
+
 
 main :: Effect Unit
 main = runTest $ do
@@ -125,3 +126,19 @@ main = runTest $ do
     test "foldMap from the end" do
       let r = map (foldMap identity) (fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
+
+
+    test "moveEnd" $ do
+      let
+        arr =  ["1", "2", "3", "4", "5"]
+        r = prev =<< fromFoldable arr
+      equal (Just false) (atEnd <$> r)
+      equal (Just true) (atEnd <<< moveEnd <$> r)
+      equal (Just arr) (Array.fromFoldable <<< moveEnd <$> r)
+    test "moveStart" $ do
+      let
+        arr =  ["1", "2", "3", "4", "5"]
+        r = prev =<< fromFoldable arr
+      equal (Just false) (atStart <$> r)
+      equal (Just true) (atStart <<< moveStart <$> r)
+      equal (Just arr) (Array.fromFoldable <<< moveStart <$> r)

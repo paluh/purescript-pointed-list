@@ -5,7 +5,6 @@ import Prelude
 import Control.Comonad (class Comonad, class Extend)
 import Data.Foldable (class Foldable, foldl, foldMap, foldr)
 import Data.List (List(..), reverse, uncons)
-import Data.List (fromFoldable) as List
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.Semigroup.Foldable (class Foldable1)
@@ -109,11 +108,13 @@ insertRight a (Pointed { focus, reversedPrefix, suffix }) = Pointed
   , suffix
   }
 
+-- | Delete current `focus` and move to the left if possible.
 deleteLeft ∷ ∀ a. Pointed a → Maybe (Pointed a)
 deleteLeft (Pointed { focus, reversedPrefix, suffix }) =
   uncons reversedPrefix <#> \{ head, tail } → Pointed
     { focus: head, reversedPrefix: tail, suffix }
 
+-- | Delete current `focus` and move to the right if possible.
 deleteRight ∷ ∀ a. Pointed a → Maybe (Pointed a)
 deleteRight (Pointed { focus, reversedPrefix, suffix }) =
   uncons suffix <#> \{ head, tail } → Pointed
@@ -126,6 +127,24 @@ dropPrefix (Pointed { focus, suffix }) =
 dropSuffix ∷ ∀ a. Pointed a → Pointed a
 dropSuffix (Pointed { focus, reversedPrefix }) =
   Pointed { focus, reversedPrefix, suffix: Nil }
+
+moveStart ∷ ∀ a. Pointed a → Pointed a
+moveStart p@(Pointed { focus, reversedPrefix, suffix }) = case uncons (reverse <<< Cons focus $ reversedPrefix) of
+  Just { head, tail } → Pointed
+    { focus: head
+    , reversedPrefix: Nil
+    , suffix: tail <> suffix
+    }
+  Nothing → p
+
+moveEnd ∷ ∀ a. Pointed a → Pointed a
+moveEnd p@(Pointed { focus, reversedPrefix, suffix }) = case uncons (reverse <<< Cons focus $ suffix) of
+  Just { head, tail } → Pointed
+    { focus: head
+    , reversedPrefix: tail <> reversedPrefix
+    , suffix: Nil
+    }
+  Nothing → p
 
 atStart ∷ ∀ a. Pointed a → Boolean
 atStart (Pointed { reversedPrefix: Nil }) = true
