@@ -7,7 +7,7 @@ import Data.Array (foldl, foldr)
 import Data.Array (fromFoldable, snoc) as Array
 import Data.Foldable (fold, foldMap, sum)
 import Data.List (length) as List
-import Data.List.Pointed (Pointed(..), atEnd, atStart, fromFoldable, insertLeft, insertRight, pointLast, pointFirst, prev)
+import Data.List.Pointed (Pointed(..), atEnd, atStart, fromFoldable, insertLeft, insertRight, last, first, prev)
 import Data.List.Pointed (fromFoldable) as Pointed
 import Data.Maybe (Maybe(..))
 import Data.Monoid.Additive (Additive(..))
@@ -128,17 +128,17 @@ main = runTest $ do
       equal (Just "12345") r
 
 
-    test "pointLast" $ do
+    test "last" $ do
       let
         arr =  ["1", "2", "3", "4", "5"]
         r = prev =<< fromFoldable arr
       equal (Just false) (atEnd <$> r)
-      equal (Just true) (atEnd <<< pointLast <$> r)
-      equal (Just arr) (Array.fromFoldable <<< pointLast <$> r)
-    test "pointFirst" $ do
+      equal (Just true) (atEnd <<< last <$> r)
+      equal (Just arr) (Array.fromFoldable <<< last <$> r)
+    test "first" $ do
       let
         arr =  ["1", "2", "3", "4", "5"]
         r = prev =<< fromFoldable arr
       equal (Just false) (atStart <$> r)
-      equal (Just true) (atStart <<< pointFirst <$> r)
-      equal (Just arr) (Array.fromFoldable <<< pointFirst <$> r)
+      equal (Just true) (atStart <<< first <$> r)
+      equal (Just arr) (Array.fromFoldable <<< first <$> r)
