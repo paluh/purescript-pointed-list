@@ -36,10 +36,10 @@ instance extractPointed ∷ Comonad Pointed where
 
 instance foldablePointed ∷ Foldable Pointed where
   foldr f z (Pointed { focus, reversedPrefix, suffix }) =
-    foldr f (f focus (foldr f z suffix)) (reverse reversedPrefix)
+    foldl (flip f) (f focus (foldr f z suffix)) reversedPrefix
 
   foldl f z (Pointed { focus, reversedPrefix, suffix }) =
-    foldl f (f (foldr (flip f) z (reversedPrefix)) focus) suffix
+    foldl f (f (foldr (flip f) z reversedPrefix) focus) suffix
 
   foldMap f (Pointed { focus, reversedPrefix, suffix }) =
     foldMap f (reverse reversedPrefix) <> f focus <> foldMap f suffix
