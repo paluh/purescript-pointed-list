@@ -130,22 +130,14 @@ dropSuffix (Pointed { focus, reversedPrefix }) =
 
 -- | Change `focus` so it points at first element.
 first ∷ ∀ a. Pointed a → Pointed a
-first p@(Pointed { focus, reversedPrefix, suffix }) = case uncons (reverse <<< Cons focus $ reversedPrefix) of
-  Just { head, tail } → Pointed
-    { focus: head
-    , reversedPrefix: Nil
-    , suffix: tail <> suffix
-    }
+first p = case prev p of
+  Just p' → first p'
   Nothing → p
 
 -- | Change `focus` so it points at last element.
 last ∷ ∀ a. Pointed a → Pointed a
-last p@(Pointed { focus, reversedPrefix, suffix }) = case uncons (reverse <<< Cons focus $ suffix) of
-  Just { head, tail } → Pointed
-    { focus: head
-    , reversedPrefix: tail <> reversedPrefix
-    , suffix: Nil
-    }
+last p = case next p of
+  Just p' → last p'
   Nothing → p
 
 atStart ∷ ∀ a. Pointed a → Boolean
