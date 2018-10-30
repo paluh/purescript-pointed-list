@@ -3,6 +3,7 @@ module Data.List.Pointed where
 import Prelude
 
 import Control.Comonad (class Comonad, class Extend)
+import Data.Eq (class Eq1)
 import Data.Foldable (class Foldable, foldl, foldMap, foldr)
 import Data.List (List(..), reverse, uncons)
 import Data.Maybe (Maybe(..))
@@ -61,6 +62,9 @@ instance eqPointed ∷ Eq a ⇒ Eq (Pointed a) where
     (Pointed { suffix: a1, reversedPrefix: b1, focus: f1 })
     (Pointed { suffix: a2, reversedPrefix: b2, focus: f2 }) =
       a1 == a2 && b1 == b2 && f1 == f2
+
+instance eq1Pointed :: Eq1 Pointed where
+  eq1 = eq
 
 -- | Build and set focus at the end.
 fromFoldable ∷ ∀ a f. Foldable f ⇒ f a → Maybe (Pointed a)
