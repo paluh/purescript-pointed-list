@@ -22,7 +22,7 @@ Currently this library provides bunch of instances: `Foldable`, `Foldable1`, `Tr
 
 Additionally it implements following operations:
 
-* `prev`, `next`, `insertLeft`, `insertRight`, `deleteLeft`, `deleteRight`, `replace`, `dropPrefix`, `dropSuffix`, `atStart`, `atEnd` - O(1)
+* `prev`, `next`, `insertLeft`, `insertRight`, `deleteLeft`, `deleteRight`, `moveLeft`, `moveRight`, `replace`, `dropPrefix`, `dropSuffix`, `atStart`, `atEnd` - O(1)
 * `first`, `last` - O(n)
 
 ## Usage example

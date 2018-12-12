@@ -7,7 +7,7 @@ import Data.Array (foldl, foldr)
 import Data.Array (fromFoldable, snoc) as Array
 import Data.Foldable (fold, foldMap, sum)
 import Data.List (length) as List
-import Data.List.Pointed (Pointed(..), atEnd, atStart, fromFoldable, insertLeft, insertRight, last, first, prev)
+import Data.List.Pointed (Pointed(..), atEnd, atStart, first, fromFoldable, insertLeft, insertRight, last, moveLeft, moveRight, prev)
 import Data.List.Pointed (fromFoldable) as Pointed
 import Data.Maybe (Maybe(..))
 import Data.Monoid.Additive (Additive(..))
@@ -41,6 +41,18 @@ main = runTest $ do
         p = insertLeft new <$> Pointed.fromFoldable arr
       equal (Array.fromFoldable <$> p) (Just [1,2,4,3])
       equal (extract <$> p) (Just new)
+    test "moveLeft" do
+      let
+        arr = [1, 2, 3]
+        p = moveLeft <=< Pointed.fromFoldable $ arr
+      equal (Array.fromFoldable <$> p) (Just [1,3,2])
+      equal (extract <$> p) (Just 3)
+    test "moveRight" do
+      let
+        arr = [1, 2, 3]
+        p = moveRight <=< prev <=< prev <=< Pointed.fromFoldable $ arr
+      equal (Array.fromFoldable <$> p) (Just [2,1,3])
+      equal (extract <$> p) (Just 1)
     test "extend extract from the end" do
       let
         arr = [1, 2, 3]

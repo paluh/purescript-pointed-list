@@ -124,6 +124,16 @@ deleteRight (Pointed { focus, reversedPrefix, suffix }) =
   uncons suffix <#> \{ head, tail } → Pointed
     { focus: head, reversedPrefix, suffix: tail }
 
+moveLeft ∷ ∀ a. Pointed a → Maybe (Pointed a)
+moveLeft (Pointed { focus, reversedPrefix, suffix }) =
+  uncons reversedPrefix <#> \{ head, tail } → Pointed
+    { focus, reversedPrefix: tail, suffix: Cons head suffix }
+
+moveRight ∷ ∀ a. Pointed a → Maybe (Pointed a)
+moveRight (Pointed { focus, reversedPrefix, suffix }) =
+  uncons suffix <#> \{ head, tail } → Pointed
+    { focus, reversedPrefix: Cons head reversedPrefix, suffix: tail }
+
 dropPrefix ∷ ∀ a. Pointed a → Pointed a
 dropPrefix (Pointed { focus, suffix }) =
   Pointed { focus, reversedPrefix: Nil, suffix }
