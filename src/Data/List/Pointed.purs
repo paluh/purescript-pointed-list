@@ -6,10 +6,11 @@ import Control.Comonad (class Comonad, class Extend)
 import Data.Eq (class Eq1)
 import Data.Foldable (class Foldable, foldl, foldMap, foldr)
 import Data.List (List(..), reverse, uncons)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (class Newtype)
 import Data.Semigroup.Foldable (class Foldable1)
 import Data.Traversable (class Traversable, sequence, traverseDefault)
+import Partial.Unsafe (unsafePartial)
 
 newtype Pointed a = Pointed
   { focus ∷ a
@@ -72,6 +73,9 @@ fromFoldable f = do
   let revAll = foldl (flip Cons) Nil f
   { head, tail } ← uncons revAll
   pure $ Pointed { focus: head, reversedPrefix: tail, suffix: Nil }
+
+fromFoldable1 ∷ ∀ a f. Foldable1 f ⇒ f a → Pointed a
+fromFoldable1 f = unsafePartial (fromJust $ fromFoldable $ f)
 
 singleton ∷ ∀ a. a → Pointed a
 singleton a = Pointed { focus: a, reversedPrefix: Nil, suffix: Nil }
