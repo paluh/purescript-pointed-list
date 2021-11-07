@@ -3,11 +3,9 @@ module Test.Main where
 import Prelude
 
 import Control.Comonad (extend, extract)
-import Data.Array (foldl, foldr)
 import Data.Array (fromFoldable, snoc) as Array
-import Data.Foldable (fold, foldMap, sum)
-import Data.List (length) as List
-import Data.List.Pointed (Pointed(..), atEnd, atStart, first, fromFoldable, insertLeft, insertRight, last, moveLeft, moveRight, prev)
+import Data.Foldable (fold, foldl, foldMap, foldr, sum)
+import Data.List.Pointed (Pointed(..), atEnd, atStart, first, insertLeft, insertRight, last, moveLeft, moveRight, prev)
 import Data.List.Pointed (fromFoldable) as Pointed
 import Data.Maybe (Maybe(..))
 import Data.Monoid.Additive (Additive(..))
@@ -70,7 +68,6 @@ main = runTest $ do
     test "extend assoc end" do
       let
         arr = [1, 2, 3, 4]
-        pos (Pointed { reversedPrefix }) = List.length reversedPrefix
         sum' (Pointed { suffix }) = sum suffix
         initial = Pointed.fromFoldable arr
         p = extend sum' <<< extend sum' <$> initial
@@ -80,7 +77,6 @@ main = runTest $ do
     test "extend assoc" do
       let
         arr = [1, 2, 3, 4]
-        pos (Pointed { reversedPrefix }) = List.length reversedPrefix
         sum' (Pointed { suffix }) = sum suffix
         initial = Pointed.fromFoldable arr >>= prev
         p = extend sum' <<< extend sum' <$> initial
@@ -90,7 +86,6 @@ main = runTest $ do
     test "extend assoc start" do
       let
         arr = [1, 2, 3, 4]
-        pos (Pointed { reversedPrefix }) = List.length reversedPrefix
         sum' (Pointed { suffix }) = sum suffix
         initial = Pointed.fromFoldable arr >>= prev >>= prev
         p = extend sum' <<< extend sum' <$> initial
@@ -98,59 +93,59 @@ main = runTest $ do
       equal (Array.fromFoldable <$> p') (Array.fromFoldable <$> p)
       equal (extract <$> p') (extract <$> p)
     test "fold1 from end" do
-      let r = map fold1 (fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map fold1 (Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
     test "fold1" do
-      let r = map fold1 (prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map fold1 (prev =<< prev =<< Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
     test "fold1 from start" do
-      let r = map fold1 (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map fold1 (prev =<< prev =<< prev =<< prev =<< Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
 
 
     test "foldr from the beginning" do
-      let r = map (foldr (<>) "") (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldr (<>) "") (prev =<< prev =<< prev =<< prev =<< Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
     test "foldr" do
-      let r = map (foldr (<>) "") (prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldr (<>) "") (prev =<< prev =<< Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
     test "foldr from the end" do
-      let r = map (foldr (<>) "") (fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldr (<>) "") (Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
 
     test "foldl from the beginning" do
-      let r = map (foldl (<>) "") (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldl (<>) "") (prev =<< prev =<< prev =<< prev =<< Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
     test "foldl" do
-      let r = map (foldl (<>) "") (prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldl (<>) "") (prev =<< prev =<< Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
     test "foldl from the end" do
-      let r = map (foldl (<>) "") (fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldl (<>) "") (Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
 
 
     test "foldMap from the beginning" do
-      let r = map (foldMap identity) (prev =<< prev =<< prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldMap identity) (prev =<< prev =<< prev =<< prev =<< Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
     test "foldMap" do
-      let r = map (foldMap identity) (prev =<< prev =<< fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldMap identity) (prev =<< prev =<< Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
     test "foldMap from the end" do
-      let r = map (foldMap identity) (fromFoldable ["1", "2", "3", "4", "5"])
+      let r = map (foldMap identity) (Pointed.fromFoldable ["1", "2", "3", "4", "5"])
       equal (Just "12345") r
 
 
     test "last" $ do
       let
         arr =  ["1", "2", "3", "4", "5"]
-        r = prev =<< fromFoldable arr
+        r = prev =<< Pointed.fromFoldable arr
       equal (Just false) (atEnd <$> r)
       equal (Just true) (atEnd <<< last <$> r)
       equal (Just arr) (Array.fromFoldable <<< last <$> r)
     test "first" $ do
       let
         arr =  ["1", "2", "3", "4", "5"]
-        r = prev =<< fromFoldable arr
+        r = prev =<< Pointed.fromFoldable arr
       equal (Just false) (atStart <$> r)
       equal (Just true) (atStart <<< first <$> r)
       equal (Just arr) (Array.fromFoldable <<< first <$> r)
