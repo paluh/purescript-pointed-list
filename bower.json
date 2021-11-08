@@ -1,25 +1,29 @@
 {
-  "name": "purescript-pointed-list",
-  "license": "BSD-3-Clause",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/paluh/purescript-pointed-list.git"
-  },
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "output"
-  ],
-  "dependencies": {
-    "purescript-prelude": "^4.1.0",
-    "purescript-lists": "^5.3.0"
-  },
-  "devDependencies": {
-    "purescript-console": "^4.1.0",
-    "purescript-debug": "^4.0.0",
-    "purescript-effect": "^2.0.0",
-    "purescript-psci-support": "^4.0.0",
-    "purescript-test-unit": "^14.0.0"
-  }
+    "name": "purescript-pointed-list",
+    "license": [
+        "BSD-3-Clause"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/paluh/pointed-list.git"
+    },
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "output"
+    ],
+    "dependencies": {
+        "purescript-arrays": "^v6.0.1",
+        "purescript-control": "^v5.0.0",
+        "purescript-effect": "^v3.0.0",
+        "purescript-foldable-traversable": "^v5.0.1",
+        "purescript-lists": "^v6.0.1",
+        "purescript-maybe": "^v5.0.0",
+        "purescript-newtype": "^v4.0.0",
+        "purescript-partial": "^v3.0.0",
+        "purescript-prelude": "^v5.0.1",
+        "purescript-psci-support": "^v5.0.0",
+        "purescript-test-unit": "^v16.0.0"
+    }
 }
