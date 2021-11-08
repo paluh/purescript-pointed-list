@@ -2,10 +2,12 @@
   "private": true,
   "scripts": {
     "build": "pulp build",
+    "format": "purs-tidy format-in-place src test",
     "test": "pulp test"
   },
   "devDependencies": {
     "pulp": "^12.3.0",
+    "purs-tidy": "^0.6.2",
     "purescript-psa": "^0.7.3"
   }
 }
