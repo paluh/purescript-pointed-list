@@ -1,13 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "build": "pulp build",
+    "build": "spago build",
     "format": "purs-tidy format-in-place src test",
-    "test": "pulp test"
+    "test": "spago test"
   },
   "devDependencies": {
     "pulp": "^12.3.0",
     "purs-tidy": "^0.6.2",
-    "purescript-psa": "^0.7.3"
+    "purescript-psa": "^0.7.3",
+    "spago": "^0.20.3"
   }
 }
