@@ -9,7 +9,6 @@
   , "newtype"
   , "partial"
   , "prelude"
-  , "psci-support"
   , "test-unit"
   ]
 , license = "BSD-3-Clause"

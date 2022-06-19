@@ -11,11 +11,10 @@ import Data.Semigroup.Foldable (class Foldable1, foldl1Default, foldr1Default)
 import Data.Traversable (class Traversable, sequence, traverseDefault)
 import Partial.Unsafe (unsafePartial)
 
-newtype Pointed a
-  = Pointed
-  { focus ∷ a
-  , reversedPrefix ∷ List a
-  , suffix ∷ List a
+newtype Pointed a = Pointed
+  { focus :: a
+  , reversedPrefix :: List a
+  , suffix :: List a
   }
 
 derive instance Functor Pointed
@@ -26,8 +25,8 @@ instance Extend Pointed where
   extend f initial@(Pointed { reversedPrefix, suffix }) = Pointed { focus: f initial, reversedPrefix: reversedPrefix', suffix: suffix' }
     where
     step move (p@{ prevPointed, accum }) _ = case move prevPointed of
-      Just newPointed → { prevPointed: newPointed, accum: accum <<< Cons (f newPointed) }
-      Nothing → p
+      Just newPointed -> { prevPointed: newPointed, accum: accum <<< Cons (f newPointed) }
+      Nothing -> p
 
     suffix' = (_.accum <<< foldl (step next) { prevPointed: initial, accum: identity } $ suffix) $ Nil
 
@@ -50,54 +49,54 @@ instance Traversable Pointed where
 instance Foldable1 Pointed where
   foldr1 f = foldr1Default f
   foldl1 f = foldl1Default f
-  foldMap1 f (Pointed { suffix, reversedPrefix, focus }) = foldl (\r e → r <> f e) (foldl (\r e → f e <> r) (f focus) reversedPrefix) suffix
+  foldMap1 f (Pointed { suffix, reversedPrefix, focus }) = foldl (\r e -> r <> f e) (foldl (\r e -> f e <> r) (f focus) reversedPrefix) suffix
 
-instance Eq a ⇒ Eq (Pointed a) where
+instance Eq a => Eq (Pointed a) where
   eq (Pointed { suffix: a1, reversedPrefix: b1, focus: f1 }) (Pointed { suffix: a2, reversedPrefix: b2, focus: f2 }) = a1 == a2 && b1 == b2 && f1 == f2
 
 instance Eq1 Pointed where
   eq1 = eq
 
 -- | Build and set focus at the end.
-fromFoldable ∷ ∀ a f. Foldable f ⇒ f a → Maybe (Pointed a)
+fromFoldable :: forall a f. Foldable f => f a -> Maybe (Pointed a)
 fromFoldable f = do
   let
     revAll = foldl (flip Cons) Nil f
-  { head, tail } ← uncons revAll
+  { head, tail } <- uncons revAll
   pure $ Pointed { focus: head, reversedPrefix: tail, suffix: Nil }
 
-fromFoldable1 ∷ ∀ a f. Foldable1 f ⇒ f a → Pointed a
+fromFoldable1 :: forall a f. Foldable1 f => f a -> Pointed a
 fromFoldable1 f = unsafePartial (fromJust $ fromFoldable $ f)
 
-singleton ∷ ∀ a. a → Pointed a
+singleton :: forall a. a -> Pointed a
 singleton a = Pointed { focus: a, reversedPrefix: Nil, suffix: Nil }
 
-next ∷ ∀ a. Pointed a → Maybe (Pointed a)
+next :: forall a. Pointed a -> Maybe (Pointed a)
 next (Pointed { focus, reversedPrefix, suffix }) =
   uncons suffix
-    <#> \{ head, tail } →
-        Pointed
-          { focus: head
-          , reversedPrefix: Cons focus reversedPrefix
-          , suffix: tail
-          }
+    <#> \{ head, tail } ->
+      Pointed
+        { focus: head
+        , reversedPrefix: Cons focus reversedPrefix
+        , suffix: tail
+        }
 
-prev ∷ ∀ a. Pointed a → Maybe (Pointed a)
+prev :: forall a. Pointed a -> Maybe (Pointed a)
 prev (Pointed { focus, reversedPrefix, suffix }) =
   uncons reversedPrefix
-    <#> \{ head, tail } →
-        Pointed
-          { focus: head
-          , reversedPrefix: tail
-          , suffix: Cons focus suffix
-          }
+    <#> \{ head, tail } ->
+      Pointed
+        { focus: head
+        , reversedPrefix: tail
+        , suffix: Cons focus suffix
+        }
 
-replace ∷ ∀ a. a → Pointed a → Pointed a
+replace :: forall a. a -> Pointed a -> Pointed a
 replace a (Pointed { reversedPrefix, suffix }) = Pointed { focus: a, reversedPrefix, suffix }
 
 -- | Insert element before current focus and move
 -- | focus to the new one.
-insertLeft ∷ ∀ a. a → Pointed a → Pointed a
+insertLeft :: forall a. a -> Pointed a -> Pointed a
 insertLeft a (Pointed { focus, reversedPrefix, suffix }) =
   Pointed
     { focus: a
@@ -105,7 +104,7 @@ insertLeft a (Pointed { focus, reversedPrefix, suffix }) =
     , suffix: Cons focus suffix
     }
 
-insertRight ∷ ∀ a. a → Pointed a → Pointed a
+insertRight :: forall a. a -> Pointed a -> Pointed a
 insertRight a (Pointed { focus, reversedPrefix, suffix }) =
   Pointed
     { focus: a
@@ -114,59 +113,59 @@ insertRight a (Pointed { focus, reversedPrefix, suffix }) =
     }
 
 -- | Delete current `focus` and move to the left if possible.
-deleteLeft ∷ ∀ a. Pointed a → Maybe (Pointed a)
+deleteLeft :: forall a. Pointed a -> Maybe (Pointed a)
 deleteLeft (Pointed { reversedPrefix, suffix }) =
   uncons reversedPrefix
-    <#> \{ head, tail } →
-        Pointed
-          { focus: head, reversedPrefix: tail, suffix }
+    <#> \{ head, tail } ->
+      Pointed
+        { focus: head, reversedPrefix: tail, suffix }
 
 -- | Delete current `focus` and move to the right if possible.
-deleteRight ∷ ∀ a. Pointed a → Maybe (Pointed a)
+deleteRight :: forall a. Pointed a -> Maybe (Pointed a)
 deleteRight (Pointed { reversedPrefix, suffix }) =
   uncons suffix
-    <#> \{ head, tail } →
-        Pointed
-          { focus: head, reversedPrefix, suffix: tail }
+    <#> \{ head, tail } ->
+      Pointed
+        { focus: head, reversedPrefix, suffix: tail }
 
-moveLeft ∷ ∀ a. Pointed a → Maybe (Pointed a)
+moveLeft :: forall a. Pointed a -> Maybe (Pointed a)
 moveLeft (Pointed { focus, reversedPrefix, suffix }) =
   uncons reversedPrefix
-    <#> \{ head, tail } →
-        Pointed
-          { focus, reversedPrefix: tail, suffix: Cons head suffix }
+    <#> \{ head, tail } ->
+      Pointed
+        { focus, reversedPrefix: tail, suffix: Cons head suffix }
 
-moveRight ∷ ∀ a. Pointed a → Maybe (Pointed a)
+moveRight :: forall a. Pointed a -> Maybe (Pointed a)
 moveRight (Pointed { focus, reversedPrefix, suffix }) =
   uncons suffix
-    <#> \{ head, tail } →
-        Pointed
-          { focus, reversedPrefix: Cons head reversedPrefix, suffix: tail }
+    <#> \{ head, tail } ->
+      Pointed
+        { focus, reversedPrefix: Cons head reversedPrefix, suffix: tail }
 
-dropPrefix ∷ ∀ a. Pointed a → Pointed a
+dropPrefix :: forall a. Pointed a -> Pointed a
 dropPrefix (Pointed { focus, suffix }) = Pointed { focus, reversedPrefix: Nil, suffix }
 
-dropSuffix ∷ ∀ a. Pointed a → Pointed a
+dropSuffix :: forall a. Pointed a -> Pointed a
 dropSuffix (Pointed { focus, reversedPrefix }) = Pointed { focus, reversedPrefix, suffix: Nil }
 
 -- | Change `focus` so it points at first element.
-first ∷ ∀ a. Pointed a → Pointed a
+first :: forall a. Pointed a -> Pointed a
 first p = case prev p of
-  Just p' → first p'
-  Nothing → p
+  Just p' -> first p'
+  Nothing -> p
 
 -- | Change `focus` so it points at last element.
-last ∷ ∀ a. Pointed a → Pointed a
+last :: forall a. Pointed a -> Pointed a
 last p = case next p of
-  Just p' → last p'
-  Nothing → p
+  Just p' -> last p'
+  Nothing -> p
 
-atStart ∷ ∀ a. Pointed a → Boolean
+atStart :: forall a. Pointed a -> Boolean
 atStart (Pointed { reversedPrefix: Nil }) = true
 
 atStart _ = false
 
-atEnd ∷ ∀ a. Pointed a → Boolean
+atEnd :: forall a. Pointed a -> Boolean
 atEnd (Pointed { suffix: Nil }) = true
 
 atEnd _ = false
